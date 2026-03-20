@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm view:*)",
+      "Bash(export PATH=$ANDROID_HOME/platform-tools:$PATH)",
+      "Bash(find /home/prateek/rn-app/node_modules/react-native-document-scanner-plugin/android -name *.java -o -name *.kt)",
+      "Bash($ANDROID_HOME/platform-tools/adb devices:*)",
+      "Bash($ANDROID_HOME/platform-tools/adb install:*)",
+      "Read(//home/prateek/rn-app/**)",
+      "Bash(./android/gradlew -p android assembleRelease --no-daemon)",
+      "Bash(./android/gradlew -p android assembleRelease --no-daemon -PreactNativeArchitectures=arm64-v8a)"
+    ]
+  }
+}
