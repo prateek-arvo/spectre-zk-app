@@ -5,16 +5,16 @@ import 'react-native-reanimated';
 
 export default function RootLayout() {
   return (
-    <View style={{ flex: 1, backgroundColor: '#0a0a0a' }}>
+    <View style={{ flex: 1, backgroundColor: '#F5F8FB' }}>
       <Stack
         screenOptions={{
           headerShown: false,
-          contentStyle: { backgroundColor: '#0a0a0a' },
+          contentStyle: { backgroundColor: '#F5F8FB' },
         }}
       >
         <Stack.Screen name="index" />
       </Stack>
-      <StatusBar style="light" />
+      <StatusBar style="dark" />
     </View>
   );
 }

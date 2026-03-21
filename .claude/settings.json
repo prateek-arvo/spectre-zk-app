@@ -8,7 +8,23 @@
       "Bash($ANDROID_HOME/platform-tools/adb install:*)",
       "Read(//home/prateek/rn-app/**)",
       "Bash(./android/gradlew -p android assembleRelease --no-daemon)",
-      "Bash(./android/gradlew -p android assembleRelease --no-daemon -PreactNativeArchitectures=arm64-v8a)"
+      "Bash(./android/gradlew -p android assembleRelease --no-daemon -PreactNativeArchitectures=arm64-v8a)",
+      "Bash(adb devices:*)",
+      "Bash(npx expo:*)",
+      "Bash(npm install:*)",
+      "Bash(./gradlew assembleDebug -Preact.architectures=arm64-v8a)",
+      "Bash(./gradlew assembleDebug)",
+      "Bash(./gradlew assembleDebug --stacktrace)",
+      "Bash(adb install:*)",
+      "Bash(adb connect:*)",
+      "Read(//home/prateek/spectre-app/spectre-zk-app/**)",
+      "Bash(adb reverse:*)",
+      "Bash(./gradlew assembleRelease)",
+      "Read(//root/**)",
+      "Read(//home/prateek/android-sdk/**)",
+      "Bash(echo $ANDROID_HOME)",
+      "Bash(echo $ANDROID_SDK_ROOT)",
+      "Bash(./gradlew assembleRelease -PreactNativeArchitectures=arm64-v8a)"
     ]
   }
 }

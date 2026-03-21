@@ -10,7 +10,6 @@ import {
   ActivityIndicator,
   ScrollView,
 } from 'react-native';
-import { Image } from 'expo-image';
 import { Camera } from 'react-native-vision-camera';
 import * as SplashScreen from 'expo-splash-screen';
 import DocumentScanner, {
@@ -25,8 +24,6 @@ const SERVER_URL = 'https://spectre-detector-911160267678.asia-south2.run.app';
 interface DetectResult {
   id: number;
   confidence: number;
-  debug_original?: string;
-  debug_warped?: string;
 }
 
 export default function HomeScreen() {
@@ -36,7 +33,6 @@ export default function HomeScreen() {
   const [result, setResult] = useState<DetectResult | null>(null);
   const [warning, setWarning] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [showDebug, setShowDebug] = useState(false);
 
   useEffect(() => {
     setReady(true);
@@ -57,7 +53,6 @@ export default function HomeScreen() {
     setResult(null);
     setWarning(null);
     setError(null);
-    setShowDebug(false);
 
     try {
       const scanResult = await DocumentScanner.scanDocument({
@@ -84,7 +79,7 @@ export default function HomeScreen() {
           name: 'scan.jpg',
         } as any);
 
-        const res = await fetch(`${SERVER_URL}/detect?debug=true`, {
+        const res = await fetch(`${SERVER_URL}/detect`, {
           method: 'POST',
           body: formData,
         });
@@ -100,21 +95,12 @@ export default function HomeScreen() {
 
         if (!res.ok) {
           setError(data.error || `Server error: ${res.status}`);
+        } else if (data.confidence != null && data.confidence < 0.5) {
+          setWarning('Try a closer well lit photo');
         } else if (data.warning) {
           setWarning(data.warning);
-          setResult({
-            id: data.id,
-            confidence: data.confidence,
-            debug_original: data.debug_original,
-            debug_warped: data.debug_warped,
-          });
         } else {
-          setResult({
-            id: data.id,
-            confidence: data.confidence,
-            debug_original: data.debug_original,
-            debug_warped: data.debug_warped,
-          });
+          setResult({ id: data.id, confidence: data.confidence });
         }
       }
     } catch (err: any) {
@@ -140,53 +126,8 @@ export default function HomeScreen() {
         {result && (
           <View style={styles.resultCard}>
             <Text style={styles.resultHeading}>Pattern Detected</Text>
-            <View style={styles.resultRow}>
-              <View style={styles.resultItem}>
-                <Text style={styles.resultNumber}>{result.id}</Text>
-                <Text style={styles.resultLabel}>ID</Text>
-              </View>
-              <View style={styles.divider} />
-              <View style={styles.resultItem}>
-                <Text style={styles.resultNumber}>
-                  {(result.confidence * 100).toFixed(1)}%
-                </Text>
-                <Text style={styles.resultLabel}>Confidence</Text>
-              </View>
-            </View>
-
-            {(result.debug_original || result.debug_warped) && (
-              <TouchableOpacity
-                style={styles.debugToggle}
-                onPress={() => setShowDebug((s) => !s)}
-                activeOpacity={0.7}
-              >
-                <Text style={styles.debugToggleText}>
-                  {showDebug ? 'Hide Debug Images' : 'Show Debug Images'}
-                </Text>
-              </TouchableOpacity>
-            )}
-          </View>
-        )}
-
-        {showDebug && result?.debug_original && (
-          <View style={styles.debugCard}>
-            <Text style={styles.debugLabel}>Detection Overlay</Text>
-            <Image
-              source={{ uri: `data:image/jpeg;base64,${result.debug_original}` }}
-              style={styles.debugImage}
-              contentFit="contain"
-            />
-          </View>
-        )}
-
-        {showDebug && result?.debug_warped && (
-          <View style={styles.debugCard}>
-            <Text style={styles.debugLabel}>Warped Grid</Text>
-            <Image
-              source={{ uri: `data:image/jpeg;base64,${result.debug_warped}` }}
-              style={styles.debugImage}
-              contentFit="contain"
-            />
+            <Text style={styles.resultNumber}>{result.id}</Text>
+            <Text style={styles.resultLabel}>Pattern ID</Text>
           </View>
         )}
 
@@ -231,7 +172,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0a0a0a',
+    backgroundColor: '#F5F8FB',
   },
   scrollContent: {
     flexGrow: 1,
@@ -245,83 +186,71 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 42,
     fontWeight: '900',
-    color: '#fff',
+    color: '#0a1a2a',
     letterSpacing: -1,
   },
   subtitle: {
     fontSize: 16,
-    color: '#777',
+    color: '#5A7A8A',
     marginTop: 8,
     lineHeight: 23,
   },
   resultCard: {
-    backgroundColor: '#0d1f0d',
+    backgroundColor: '#fff',
     borderWidth: 1,
-    borderColor: '#1a4a1a',
+    borderColor: '#D0E4F0',
     borderRadius: 16,
-    padding: 20,
+    padding: 24,
     marginBottom: 20,
+    alignItems: 'center',
   },
   resultHeading: {
-    color: '#4CAF50',
+    color: '#0077CC',
     fontSize: 13,
     fontWeight: '700',
     textTransform: 'uppercase',
     letterSpacing: 1,
     marginBottom: 16,
   },
-  resultRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  resultItem: {
-    flex: 1,
-    alignItems: 'center',
-  },
   resultNumber: {
-    color: '#fff',
-    fontSize: 32,
+    color: '#0a1a2a',
+    fontSize: 48,
     fontWeight: '800',
   },
   resultLabel: {
-    color: '#6a9a6a',
+    color: '#5A7A8A',
     fontSize: 13,
     fontWeight: '600',
-    marginTop: 4,
-  },
-  divider: {
-    width: 1,
-    height: 40,
-    backgroundColor: '#1a3a1a',
+    marginTop: 6,
   },
   warningCard: {
-    backgroundColor: '#1f1a0d',
+    backgroundColor: '#FFF8E8',
     borderWidth: 1,
-    borderColor: '#4a3a1a',
+    borderColor: '#E8D8A0',
     borderRadius: 16,
     padding: 16,
     marginBottom: 20,
   },
   warningText: {
-    color: '#e0a030',
+    color: '#8A6A10',
     fontSize: 15,
     lineHeight: 22,
   },
   errorCard: {
-    backgroundColor: '#1f0d0d',
+    backgroundColor: '#FFF0F0',
     borderWidth: 1,
-    borderColor: '#4a1a1a',
+    borderColor: '#F0C0C0',
     borderRadius: 16,
     padding: 16,
     marginBottom: 20,
   },
   errorText: {
-    color: '#e06060',
+    color: '#AA3030',
     fontSize: 15,
     lineHeight: 22,
   },
   scanButton: {
-    backgroundColor: '#2196F3',
+    backgroundColor: '#0077CC',
     borderRadius: 14,
     paddingVertical: 18,
     alignItems: 'center',
@@ -339,38 +268,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
   },
-  debugToggle: {
-    marginTop: 16,
-    paddingVertical: 10,
-    borderTopWidth: 1,
-    borderTopColor: '#1a3a1a',
-    alignItems: 'center',
-  },
-  debugToggleText: {
-    color: '#5588bb',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  debugCard: {
-    backgroundColor: '#111',
-    borderRadius: 12,
-    overflow: 'hidden',
-    marginBottom: 16,
-    padding: 12,
-  },
-  debugLabel: {
-    color: '#88aacc',
-    fontSize: 13,
-    fontWeight: '600',
-    marginBottom: 8,
-  },
-  debugImage: {
-    width: '100%',
-    height: 280,
-    borderRadius: 8,
-  },
   footer: {
-    color: '#444',
+    color: '#A0B0C0',
     fontSize: 13,
     textAlign: 'center',
     paddingTop: 20,
