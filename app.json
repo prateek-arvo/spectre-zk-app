@@ -9,9 +9,11 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true,
+      "supportsTablet": false,
       "infoPlist": {
-        "NSCameraUsageDescription": "Spectre needs camera access to scan documents and labels."
+        "NSCameraUsageDescription": "Spectre needs camera access to scan documents and labels.",
+        "NSLocationWhenInUseUsageDescription": "Spectre does not use your location. This permission is required by a third-party library.",
+        "ITSAppUsesNonExemptEncryption": false
       },
       "bundleIdentifier": "com.onearvo.spectre"
     },
@@ -31,7 +33,8 @@
         "android.permission.READ_MEDIA_VIDEO",
         "android.permission.READ_MEDIA_AUDIO"
       ],
-      "package": "com.onearvo.spectre"
+      "package": "com.onearvo.spectre",
+      "versionCode": 2
     },
     "web": {
       "output": "static",
